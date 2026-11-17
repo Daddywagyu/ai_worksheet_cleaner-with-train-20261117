@@ -1,0 +1,85 @@
+name: Build Windows Installer
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '**.py'
+      - 'requirements.txt'
+      - 'models/**'
+      - 'config/**'
+      - 'scripts/**'
+      - '.github/workflows/windows-installer.yml'
+      - 'installer/**'
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-latest
+    timeout-minutes: 90
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+
+      - name: Install runtime dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install "PyMuPDF>=1.24,<2" "opencv-python-headless>=4.9" "numpy>=1.26,<3" "Pillow>=10.2" "PySide6>=6.6,<7" "PyYAML>=6" "openvino>=2024.4" "pyinstaller>=6.6"
+
+      - name: Build application with PyInstaller
+        shell: pwsh
+        run: |
+          $pyArgs = @(
+            "--noconfirm", "--clean", "--windowed",
+            "--name", "AIWorksheetCleaner",
+            "--collect-all", "openvino",
+            "--collect-submodules", "app",
+            "--collect-submodules", "core",
+            "--collect-submodules", "ai",
+            "--collect-submodules", "workers",
+            "--exclude-module", "torch",
+            "--exclude-module", "torchvision",
+            "--exclude-module", "onnx",
+            "--exclude-module", "pytest"
+          )
+          if (Test-Path "models") { $pyArgs += @("--add-data", "models;models") }
+          if (Test-Path "config") { $pyArgs += @("--add-data", "config;config") }
+          $pyArgs += "main.py"
+          python -m PyInstaller @pyArgs
+          if (!(Test-Path "dist/AIWorksheetCleaner/AIWorksheetCleaner.exe")) {
+            throw "PyInstaller did not produce the expected EXE."
+          }
+
+      - name: Install Inno Setup
+        shell: pwsh
+        run: choco install innosetup --yes --no-progress
+
+      - name: Build Setup.exe
+        shell: pwsh
+        run: |
+          $iscc = "$env:ProgramFiles(x86)\Inno Setup 6\ISCC.exe"
+          if (!(Test-Path $iscc)) { throw "Inno Setup compiler not found." }
+          & $iscc "installer/AIWorksheetCleaner.iss"
+          if (!(Test-Path "installer-output/AIWorksheetCleaner-Setup.exe")) {
+            throw "Installer was not created."
+          }
+
+      - name: Upload installer and portable build
+        uses: actions/upload-artifact@v4
+        with:
+          name: AIWorksheetCleaner-Windows-x64
+          path: |
+            installer-output/AIWorksheetCleaner-Setup.exe
+            dist/AIWorksheetCleaner/**
+          if-no-files-found: error
+          retention-days: 30
