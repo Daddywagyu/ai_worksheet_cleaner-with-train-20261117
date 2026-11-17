@@ -67,9 +67,19 @@ jobs:
       - name: Build Setup.exe
         shell: pwsh
         run: |
-          $iscc = "$env:ProgramFiles(x86)\Inno Setup 6\ISCC.exe"
-          if (!(Test-Path $iscc)) { throw "Inno Setup compiler not found." }
+          $candidates = @(
+            "C:\Program Files (x86)\Inno Setup 6\ISCC.exe",
+            "C:\Program Files\Inno Setup 6\ISCC.exe"
+          )
+          $iscc = $candidates | Where-Object { Test-Path $_ } | Select-Object -First 1
+          if (!$iscc) {
+            $found = Get-ChildItem "C:\Program Files*", "C:\Program Files (x86)" -Filter ISCC.exe -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+            if ($found) { $iscc = $found.FullName }
+          }
+          if (!$iscc) { throw "Inno Setup compiler not found in standard installation paths." }
+          Write-Host "Using Inno Setup compiler: $iscc"
           & $iscc "installer/AIWorksheetCleaner.iss"
+          if ($LASTEXITCODE -ne 0) { throw "Inno Setup compilation failed with exit code $LASTEXITCODE." }
           if (!(Test-Path "installer-output/AIWorksheetCleaner-Setup.exe")) {
             throw "Installer was not created."
           }
