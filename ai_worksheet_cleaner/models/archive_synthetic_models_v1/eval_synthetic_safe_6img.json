@@ -1,0 +1,46 @@
+{
+ "split": "test",
+ "n_images": 6,
+ "mode": "conservative",
+ "data_source": "synthetic",
+ "pencil_ai": {
+  "precision": 0.41769303916481854,
+  "recall": 0.4565426300860658,
+  "f1": 0.4318886369915795,
+  "iou": 0.2870206768254987
+ },
+ "pencil_classical_fallback": {
+  "precision": 0.3744423261632193,
+  "recall": 0.22911047190137437,
+  "f1": 0.27638548394078505,
+  "iou": 0.16259284895823925
+ },
+ "pencil_ai_with_print_override": {
+  "precision": 0.4155799703874938,
+  "recall": 0.4654634385417435,
+  "f1": 0.4349776216883914,
+  "iou": 0.28999560506230354
+ },
+ "printed_pixels_wrongly_in_removal_mask_per_page": {
+  "ai": 51.833333333333336,
+  "ai_override": 61.0
+ },
+ "clean_page_false_positive_px_per_page": {
+  "ai": 92.83333333333333,
+  "classical": 32.833333333333336,
+  "ai_override": 102.0
+ },
+ "clean_pages_with_any_false_positive": {
+  "ai": 0.5,
+  "classical": 0.16666666666666666,
+  "ai_override": 0.5
+ },
+ "gt_pencil_px_inside_protection_unremovable_share": 0.4497755688154079,
+ "restoration_stroke_region_psnr_db": {
+  "none": 21.739695820738778,
+  "ai": 24.83407675660196,
+  "classical": 22.957370329812463,
+  "ai_override": 24.90417057053607
+ },
+ "ocr_text_preservation": "not measured (no OCR engine bundled)"
+}

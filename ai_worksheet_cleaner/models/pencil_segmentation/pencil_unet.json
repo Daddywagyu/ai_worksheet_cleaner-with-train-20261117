@@ -1,0 +1,26 @@
+{
+ "max_abs_logit_diff": 0.2619209289550781,
+ "argmax_agreement": 0.999237060546875,
+ "precision": "fp16",
+ "tile": 256,
+ "meta": {
+  "classes": [
+   "background",
+   "printed",
+   "red_ink",
+   "blue_ink",
+   "pencil",
+   "other_handwriting",
+   "uncertain"
+  ],
+  "train_dpi": 100,
+  "tile": 192,
+  "trained_on": "see manifest",
+  "seed": 3,
+  "steps": 1440,
+  "val_ink_miou": 0.17262512768130744
+ },
+ "note": "ต้นแบบ — เทรนต่อจากข้อมูลสังเคราะห์ (synthetic, Phase 2–3) ด้วยภาพสแกนจริง 85 หน้า (6 ชุดใบงาน) ป้ายกำกับแบบประมาณจากความต่างของ PDF คู่; รอบสุดท้ายใช้ข้อมูลทุกชุดจึงไม่มีชุดทดสอบแยกของโมเดลนี้ (ผลที่ตรวจสอบแล้วมาจากรอบทดลองที่กันชุด 1 และ 4 ไว้) — ไม่ได้ quantize INT8",
+ "pretrained_on": "synthetic worksheets (Phase 2-3)",
+ "fine_tuned_on": "real paired scans, 6 sets, 85 pages, weak labels"
+}

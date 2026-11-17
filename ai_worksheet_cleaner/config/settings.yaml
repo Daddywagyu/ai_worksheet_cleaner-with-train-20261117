@@ -1,0 +1,11 @@
+# ค่าเริ่มต้น (Phase 1) — โหมด Safe เป็นค่าเริ่มต้นตามสเปก
+mode: conservative        # conservative=Safe, balanced, advanced=Deep Cleaning
+detect_red: true
+detect_blue: true
+sens_red: 0.5
+sens_blue: 0.5
+preservation: 0.5
+mask_expand: 2
+inpaint_radius: 3
+restore_method: auto
+process_dpi: 300
